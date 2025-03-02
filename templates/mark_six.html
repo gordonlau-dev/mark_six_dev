@@ -2,9 +2,24 @@
 
 {% block content %}
 <div class="container">
-  <h2 class="p-1 fw-bold w-100 d-flex justify-content-center">
-    Check
-  </h2>
+  <div class="p-1 fw-bold w-100 d-flex justify-content-center">
+    <form method="post" id="m6_result" action="/get_mark_six_results"></form>
+    <h2>Check</h2>
+    <div class="p-1">
+      <input type="text" id="result_index" name="result_index" class="form-control" value=""/>
+      <!-- <select class="form-select form-select-lg mb-3" name="result_index" aria-label="Default select example">
+        <option selected>Open this select menu</option>
+        <option value="1">One</option>
+        <option value="2">Two</option>
+        <option value="3">Three</option>
+      </select> -->
+    </div>
+    <div class="px-1">
+      <button type="button" class="btn btn-primary" onClick="get_result()">Get Result</button>
+    </div>
+    <div class="p-2" id="result_info"></div>
+    </form>
+  </div>
   <form method="post" id="m6_form" action="">
     <div class="d-flex justify-content-center">
       <div class="w-10 p-2">
@@ -255,5 +270,37 @@
     document.getElementById('type').value = "check";
     document.getElementById("m6_form").submit();
   }
+
+  function get_result(){
+    console.debug('get_result');
+    const selectElement = document.getElementById('result_index');
+    const selectedValue = selectElement.value;
+    console.debug('get_result.selectedValue', selectedValue);
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', document.getElementById('m6_result').action, true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.status === 200) {
+          // console.log('Success:', xhr.responseText);
+          const response = JSON.parse(xhr.responseText);
+          // console.debug(response.no);
+          document.getElementById('n1').value = response.no[0];
+          document.getElementById('n2').value = response.no[1];
+          document.getElementById('n3').value = response.no[2];
+          document.getElementById('n4').value = response.no[3];
+          document.getElementById('n5').value = response.no[4];
+          document.getElementById('n6').value = response.no[5];
+          document.getElementById('n7').value = response.sno;
+          document.getElementById('result_info').innerHTML = response.id + " (" + response.date + ")";
+
+        } else {
+          console.error('Error:', xhr.statusText);
+        }
+      }
+    };
+    xhr.send('result_index=' + encodeURIComponent(selectedValue));
+  }
+    
 </script>
 {% endblock content %}

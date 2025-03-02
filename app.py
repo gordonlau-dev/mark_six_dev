@@ -8,6 +8,7 @@ from mark_six_utils import (
     validate_count,
     recursive_generate,
     generate_n1_to_n7,
+    get_m6_result_by_index
 )
 import json
 import socket
@@ -181,6 +182,14 @@ def mark_six():
             display_overlay=display_overlay,
         )
 
+
+@app.route("/get_mark_six_results", methods=["GET", "POST"])
+def get_mark_six_results():
+    if request.method == "POST":
+        result_index = request.values.get("result_index")
+    result = get_m6_result_by_index(int(result_index))
+
+    return result
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=9999, debug=True)

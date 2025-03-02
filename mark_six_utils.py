@@ -1,5 +1,5 @@
 import random
-
+import requests
 
 def generate_random_numbers(n):
     return random.sample(range(0, n), 1)[0]
@@ -202,3 +202,18 @@ def recursive_generate(match_dict, try_count, n1, n2, n3, n4, n5, n6, n7):
                 found = True
 
         return try_count
+
+def get_m6_result_by_index(i):
+    url = 'https://raw.githubusercontent.com/icelam/mark-six-data-visualization/refs/heads/master/data/all.json'
+    response = requests.get(url)
+    data = []
+    result = {}
+    if response.status_code == 200:
+        # print('Success!')
+        data = response.json()  # or response.json() if the response is in JSON format
+        # print(data[0])
+        result = data[i-1]
+    else:
+        print('Failed to retrieve data. Status code:', response.status_code)
+
+    return result
