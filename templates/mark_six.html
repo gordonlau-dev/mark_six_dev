@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <h2 class="p-1 fw-bold w-100 d-flex justify-content-center">
+    Check
+  </h2>
+  <form method="post" id="m6_form" action="">
+    <div class="d-flex justify-content-center">
+      <div class="w-10 p-2">
+        <input type="text" id="n1" name="n1" class="form-control" value="{{n1}}"/>
+      </div>
+      <div class="w-10 p-2">
+        <input type="text" id="n2" name="n2" class="form-control" value="{{n2}}" />
+      </div>
+      <div class="w-10 p-2">
+        <input type="text" id="n3" name="n3" class="form-control" value="{{n3}}" />
+      </div>
+      <div class="w-10 p-2">
+        <input type="text" id="n4" name="n4" class="form-control" value="{{n4}}" />
+      </div>
+      <div class="w-10 p-2">
+        <input type="text" id="n5" name="n5" class="form-control" value="{{n5}}" />
+      </div>
+      <div class="w-10 p-2">
+        <input type="text" id="n6" name="n6" class="form-control" value="{{n6}}" />
+      </div>
+      <div class="w-10 p-2">
+        <input type="text" id="n7" name="n7" class="form-control" value="{{n7}}" />
+      </div>
+      <button type="button" class="btn btn-primary" onClick="check()">Check</button>
+      
+      <input type="hidden" id="type" name="type" value="{{type}}"/>
+      <input type="hidden" id="e1" name="e1" value="{{e1}}"/>
+      <input type="hidden" id="e2" name="e2" value="{{e2}}"/>
+      <input type="hidden" id="e3" name="e3" value="{{e3}}"/>
+    </div>
+  
+    <h2 class="p-1 fw-bold w-100 d-flex justify-content-center">
+      Results
+    </h2>
+
+    <div class="row">
+      <div class="col pt-1">
+        <div >
+          <div class="d-flex justify-content-end">
+            <div class="p-2">Results:</div>
+            <button type="button" class="btn btn-primary" onClick="regenerate()">Regenerate</button>
+          </div>
+          <div class="d-flex justify-content-end result-cotainer">
+            <div class="">
+              {% for result1 in results %}
+              <div class="d-flex"><div class="pt-1 pe-3">{{ loop.index }}.</div>
+                {% for result in result1 %}
+                  <div class="p-1 d-flex">
+                    <div class=" border rounded-circle text-center {{'bg-warning' if result|check_values(n1, n2, n3, n4, n5, n6) else 'bg-info' if result|check_value_special(n7) else ''}}" style="width: 24px; height: 24px;">
+                      {{result}}
+                    </div>
+                  </div>
+              {% endfor %}
+              </div>
+              {% endfor %}
+            </div>
+            {% if display_overlay %}
+            <div class="overlay"></div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="col pt-3">
+        <div class="d-flex justify-content-center">
+          <div>
+            <div class="py-2">Data:</div>
+            <div class="result-cotainer">
+              <textarea  id="results_json" name="results_json" rows="20">{{results_json}}</textarea>
+              <!-- <div class="overlay"></div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col pt-3">
+        <div class="d-flex justify-content-start">
+          <div class="p-2">Match count:</div>
+          <button type="button" class="btn btn-success" onClick="regenerate_auto()">Auto-Generage</button>
+          <div class="w-25 p-2 d-flex ">
+            <input type="text" id="try_count" name="try_count" class="form-control" value="{{try_count}}" data-toggle="tooltip" data-placement="top" title="-1 for keep running utill getting the first prize"/>
+            <div class="pt-2 ps-2">期</div>
+          </div>
+        </div>
+        <div class="result-cotainer">
+          <div class="d-flex justify-content-start">
+            <div class="p-2 w-25">Match 0  : </div>
+            <div class="p-2 w-25">{{match_dict["0"]}}</div>
+            <div class="p-2">{{(match_dict["0"] / try_count / 17 * 100)|format_number_round(2)}}%</div>
+          </div>
+          <div class="d-flex justify-content-start">
+            <div class="p-2 w-25">Match 0.5: </div>
+            <div class="p-2 w-25">{{match_dict["0.5"]}}</div>
+            <div class="p-2 w-25">{{(match_dict["0.5"] / try_count / 17 * 100)|format_number_round(2)}}%</div>
+          </div>
+          <div class="d-flex justify-content-start">
+            <div class="p-2 w-25">Match 1  : </div>
+            <div class="p-2 w-25">{{match_dict["1"]}}</div>
+            <div class="p-2 w-25">{{(match_dict["1"] / try_count / 17 * 100)|format_number_round(2)}}%</div>
+          </div>
+          <div class="d-flex justify-content-start">
+            <div class="p-2 w-25">Match 1.5: </div>
+            <div class="p-2 w-25">{{match_dict["1.5"]}}</div>
+            <div class="p-2 w-25">{{(match_dict["1.5"] / try_count / 17 * 100)|format_number_round(2)}}%</div>
+          </div>
+          <div class="d-flex justify-content-start">
+            <div class="p-2 w-25">Match 2  : </div>
+            <div class="p-2 w-25">{{match_dict["2"]}}</div>
+            <div class="p-2 w-25">{{(match_dict["2"] / try_count / 17 * 100)|format_number_round(2)}}%</div>
+          </div>
+          <div class="d-flex justify-content-start">
+            <div class="p-2 w-25">Match 2.5: </div>
+            <div class="p-2 w-25">{{match_dict["2.5"]}}</div>
+            <div class="p-2 w-25">{{(match_dict["2.5"] / try_count / 17 * 100)|format_number_round(2)}}%</div>
+          </div>
+          <div class="d-flex justify-content-start">
+            <div class="p-2 w-25">Match 3  : </div>
+            <div class="p-2 w-25">{{match_dict["3"]}}</div>
+            <div class="p-2 w-25">{{(match_dict["3"] / try_count / 17 * 100)|format_number_round(2)}}%</div>
+            <div class="p-2">${{(match_dict["3"] * 40)|format_number_3}}</div>
+          </div>
+          <div class="d-flex justify-content-start">
+            <div class="p-2 w-25">Match 3.5: </div>
+            <div class="p-2 w-25">{{match_dict["3.5"]}}</div>
+            <div class="p-2 w-25">{{(match_dict["3.5"] / try_count / 17 * 100)|format_number_round(2)}}%</div>
+            <div class="p-2">${{(match_dict["3.5"] * 320)|format_number_3}}</div>
+          </div>
+          <div class="d-flex justify-content-start">
+            <div class="p-2 w-25">Match 4  : </div>
+            <div class="p-2 w-25">{{match_dict["4"]}}</div>
+            <div class="p-2 w-25">{{(match_dict["4"] / try_count / 17 * 100)|format_number_round(5)}}%</div>
+            <div class="p-2">${{(match_dict["4"] * 640)|format_number_3}}</div>
+          </div>
+          <div class="d-flex justify-content-start">
+            <div class="p-2 w-25">Match 4.5: </div>
+            <div class="p-2 w-25">{{match_dict["4.5"]}}</div>
+            <div class="p-2 w-25">{{(match_dict["4.5"] / try_count / 17 * 100)|format_number_round(5)}}%</div>
+            <div class="p-2">${{(match_dict["4.5"] * 9600)|format_number_3}}</div>
+          </div>
+          <div class="d-flex justify-content-start">
+            <div class="p-2 w-25">Match 5  : </div>
+            <div class="p-2 w-25">{{match_dict["5"]}}</div>
+            <div class="p-2 w-25">{{(match_dict["5"] / try_count / 17 * 100)|format_number_round(5)}}%</div>
+            <div class="p-2">${{(match_dict["5"] * 50000)|format_number_3}}</div>
+          </div>
+          <div class="d-flex justify-content-start">
+            <div class="p-2 w-25">Match 5.5: </div>
+            <div class="p-2 w-25">{{match_dict["5.5"]}}</div>
+            <div class="p-2 w-25">{{(match_dict["5.5"] / try_count / 17 * 100)|format_number_round(5)}}%</div>
+            <div class="p-2">${{(match_dict["5.5"] * 500000)|format_number_3}}</div>
+          </div>
+          <div class="d-flex justify-content-start">
+            <div class="p-2 w-25">Match 6  : </div>
+            <div class="p-2 w-25">{{match_dict["6"]}}</div>
+            <div class="p-2 w-25">{{(match_dict["6"] / try_count / 17 * 100)|format_number_round(5)}}%</div>
+            <div class="p-2">${{(match_dict["6"] * 8000000)|format_number_3}}</div>
+          </div>
+          <div class="d-flex justify-content-start">
+            <div class="p-2 w-25">Total Earn: </div>
+            <div class="p-2 w-25">${{(match_dict["3"] * 40 + match_dict["3.5"] * 320 + match_dict["4"] * 640 + match_dict["4.5"] * 9600 + match_dict["5"] * 50000 + match_dict["5.5"] * 500000 + match_dict["6"] * 8000000)|format_number_3}} </div>
+            <div class="p-2" id="greeting"></div>
+          </div>
+          <div class="d-flex justify-content-start">
+            <div class="p-2 w-25">Total Cost: </div>
+            <div class="p-2 w-25">${{(try_count * 170)|format_number_3}}</div>
+          </div>
+          {% if display_overlay %}
+          <div class="overlay"></div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-start">
+      <br/>
+      Extra number for first round: {{e1}} <br/>
+      Extra number for second round: {{e2}}, {{e3}}
+    </div>
+  </form>
+
+  {% if display_overlay %}
+  <div class="overlay-login" id="overlay-login">Input your credit card to access the content.</div> 
+  {% endif %}
+</div>
+
+
+<script>
+  const greetings = ["運氣不佳", "小試牛刀", "好過賭波", "繼續努力", "值得一搏", "全力以赴", "小財唔出,大財唔入", "小賭怡情,大賭變李家鼎", "All In", "可以退休"];
+  const cost = {{(try_count * 170)}};
+  const earn = {{(match_dict["3"] * 40) + (match_dict["3.5"] * 320) + (match_dict["4"] * 640) + 
+  (match_dict["4.5"] * 9600) + (match_dict["5"] * 50000) + (match_dict["5.5"] * 500000) + (match_dict["6"] * 8000000)}};
+  const rate = earn / cost;
+  console.log(cost, earn, rate);
+  let greeting = "";
+  if (rate >=0 && rate <= 0.05){
+    greeting = greetings[0];
+  } else if (rate >=0.05 && rate <= 0.05){
+    greeting = greetings[1];
+  } else if (rate >=0.05 && rate <= 0.10){
+    greeting = greetings[2];
+  } else if (rate >=0.10 && rate <= 0.15){
+    greeting = greetings[3];
+  } else if (rate >=0.15 && rate <= 0.2){
+    greeting = greetings[4];
+  } else if (rate >=0.2 && rate <= 0.25){
+    greeting = greetings[5];
+  } else if (rate >=0.25 && rate <= 0.3){
+    greeting = greetings[6];
+  } else if (rate >=0.3 && rate <= 0.4){
+    greeting = greetings[7];
+  } else if (rate >=0.4 && rate <= 1){
+    greeting = greetings[8];
+  } else if (rate >=1 ){
+    greeting = greetings[9];
+  }  
+
+  let div = document.getElementById("greeting");
+  div.innerText = greeting;
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+  });
+
+  function regenerate(){
+    document.getElementById('type').value = "regenerate";
+    document.getElementById("m6_form").submit();
+
+  }
+
+  function regenerate_auto(){
+    document.getElementById('type').value = "regenerate_auto";
+    document.getElementById("m6_form").submit();
+  }
+
+  function check(){
+    const n1 = document.getElementById('n1');
+    const n2 = document.getElementById('n2');
+    const n3 = document.getElementById('n3');
+    const n4 = document.getElementById('n4');
+    const n5 = document.getElementById('n5');
+    const n6 = document.getElementById('n6');
+    const n7 = document.getElementById('n7');
+
+    document.getElementById('type').value = "check";
+    document.getElementById("m6_form").submit();
+  }
+</script>
+{% endblock content %}

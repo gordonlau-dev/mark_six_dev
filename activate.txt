@@ -1,0 +1,9 @@
+## activate environment
+.\venv\Scripts\activate
+
+## generate requirements list file
+pip freeze > requirements.txt
+pip freeze | Out-File -Encoding UTF8 requirements.txt
+
+## install the requirements package
+pip install -r requirements.txt
